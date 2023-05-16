@@ -1,7 +1,7 @@
 # Docs: https://docs.github.com/en/code-security/dependabot
 
 version: 2
-updates:
+updates: 1 
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"

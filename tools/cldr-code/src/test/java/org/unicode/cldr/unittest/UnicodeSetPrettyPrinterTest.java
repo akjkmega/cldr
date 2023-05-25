@@ -52,13 +52,13 @@ public class UnicodeSetPrettyPrinterTest extends TestFmwk {
 
     public void testSimpleUnicodeSetFormatter() {
         String[][] unicodeToDisplay = {
-            {"[\u000F]", "⦕F⦖"},
+            {"[\u000F]", "❰F❱"},
             {"[\\u0024\\uFE69\\uFF04]", "$ ＄ ﹩"},
             {"[\\u0024﹩＄]", "$ ＄ ﹩"},
-            {"[\\u0020]", "⦕SP⦖"},
+            {"[\\u0020]", "❰SP❱"},
             {
                 "[\\u0020-\\u0023 \\u00AB-\\u00AD \\u0081-\\u0083]",
-                "⦕81⦖ ⦕82⦖ ⦕83⦖ ⦕SHY⦖ ⦕SP⦖ ! \" « # ¬"
+                "❰81❱ ❰82❱ ❰83❱ ❰SHY❱ ❰SP❱ ! \" « # ¬"
                 // Note: don't currently form ranges with escaped characters in display
                 // But they they parse (see below)
             },
@@ -75,8 +75,8 @@ public class UnicodeSetPrettyPrinterTest extends TestFmwk {
                 "[ÅÅ]", "Å Å"
             }, // Ensure it doesn't merge two different characters with same NFC, even though a
             // collator is used
-            {"[\\u001E-!]", "⦕1E⦖ ⦕1F⦖ ⦕SP⦖ !"},
-            {"[a\\u0020]", "⦕SP⦖ a"},
+            {"[\\u001E-!]", "❰1E❱ ❰1F❱ ❰SP❱ !"},
+            {"[a\\u0020]", "❰SP❱ a"},
             {"[abcq]", "a b c q"},
             {"[ab{cq}]", "a b cq"},
             {
@@ -85,8 +85,8 @@ public class UnicodeSetPrettyPrinterTest extends TestFmwk {
             },
             // TODO, handle {🐈‍⬛} . Not necessary at this point, because emoji don't occur in our
             // UnicodeSets
-            {"[{\\u0020\u0FFF}]", "⦕SP⦖⦕FFF⦖"},
-            {"[{a\\u0020b\\u0FFFc}]", "a⦕SP⦖b⦕FFF⦖c"},
+            {"[{\\u0020\u0FFF}]", "❰SP❱❰FFF❱"},
+            {"[{a\\u0020b\\u0FFFc}]", "a❰SP❱b❰FFF❱c"},
         };
 
         SimpleUnicodeSetFormatter susf = new SimpleUnicodeSetFormatter();
@@ -111,10 +111,10 @@ public class UnicodeSetPrettyPrinterTest extends TestFmwk {
         }
 
         String[][] displayToUnicode = {
-            {"⦕81⦖➖⦕83⦖ «➖⦕SHY⦖ ⦕SP⦖➖#", "[\\u0020-\\u0023 \\u00AB-\\u00AD \\u0081-\\u0083]"},
-            {"«➖⦕SHY⦖", "[\\u00AB-\\u00AD]"},
-            {"⦕81⦖➖⦕83⦖", "[\\u0081-\\u0083]"},
-            {"⦕SP⦖➖#", "[\\ -#]"},
+            {"❰81❱➖❰83❱ «➖❰SHY❱ ❰SP❱➖#", "[\\u0020-\\u0023 \\u00AB-\\u00AD \\u0081-\\u0083]"},
+            {"«➖❰SHY❱", "[\\u00AB-\\u00AD]"},
+            {"❰81❱➖❰83❱", "[\\u0081-\\u0083]"},
+            {"❰SP❱➖#", "[\\ -#]"},
         };
 
         for (String[] test : displayToUnicode) {
@@ -135,11 +135,11 @@ public class UnicodeSetPrettyPrinterTest extends TestFmwk {
             {"0➖", "Must have exactly one character after '➖': 0➖❌"},
             {"➖9", "Must have exactly one character before '➖': ❌➖9"},
             {"10➖9", "Must have exactly one character before '➖': 10❌➖9"},
-            {"⦕SP", "Missing end escape ⦖: ⦕SP❌"},
-            {"⦕", "Missing end escape ⦖: ⦕❌"},
-            {"⦕110000⦖", "Illegal code point: ⦕110000❌⦖"},
-            {"SP⦖", "Missing start escape ⦕: SP❌⦖"},
-            {"⦖", "Missing start escape ⦕: ❌⦖"},
+            {"❰SP", "Missing end escape ❱: ❰SP❌"},
+            {"❰", "Missing end escape ❱: ❰❌"},
+            {"❰110000❱", "Illegal code point: ❰110000❌❱"},
+            {"SP❱", "Missing start escape ❰: SP❌❱"},
+            {"❱", "Missing start escape ❰: ❌❱"},
         };
         SimpleUnicodeSetFormatter susf =
                 new SimpleUnicodeSetFormatter(SimpleUnicodeSetFormatter.BASIC_COLLATOR);
@@ -250,9 +250,6 @@ public class UnicodeSetPrettyPrinterTest extends TestFmwk {
         }
         final UnicodeSet missing =
                 new UnicodeSet(needsEscape).removeAll(CodePointEscaper.getNamedEscapes());
-        if (logKnownIssue("CLDR-16627", "remove FFFF when the ticket closes")) {
-            missing.remove(0xFFFF);
-        }
         assertEquals("*\tMissing\tNamed Escapes:\t", "", susf.format(missing));
     }
 
@@ -333,32 +330,56 @@ public class UnicodeSetPrettyPrinterTest extends TestFmwk {
         collection.add(new StringBuilder().appendCodePoint(0x10FFFF).toString());
         for (String item : collection) {
             final int cp = item.codePointAt(0);
-            String display = CodePointEscaper.toAbbreviationOrHex(cp);
-            int roundtrip = CodePointEscaper.fromAbbreviationOrHex(display);
+            String display = CodePointEscaper.codePointToEscaped(cp);
+            int roundtrip = CodePointEscaper.escapedToCodePoint(display);
             assertEquals(
                     "\tU+"
                             + Utility.hex(cp, 4)
                             + " "
                             + UCharacter.getExtendedName(cp)
                             + " ⇒ "
-                            + CodePointEscaper.ESCAPE_START
                             + display
-                            + CodePointEscaper.ESCAPE_END
                             + "\t",
                     cp,
                     roundtrip);
         }
         if (isVerbose()) {
+            System.out.println("Abbr.\tCode Point\tName");
             for (CodePointEscaper item : CodePointEscaper.values()) {
                 System.out.println(
-                        item
-                                + "\t"
+                        item.codePointToEscaped()
+                                + "\tU+"
                                 + Utility.hex(item.getCodePoint(), 4)
                                 + "\t"
-                                + UCharacter.getExtendedName(item.getCodePoint())
-                                + "\t"
-                                + Joiner.on('\t').join(item.getLongNames()));
+                                + item.getShortName());
             }
+            System.out.println(
+                    CodePointEscaper.ESCAPE_START
+                            + "…"
+                            + CodePointEscaper.ESCAPE_END
+                            + "\tU+…\tOther; … = hex notation");
+        } else {
+            warnln("Use -v to see list of escapes");
+        }
+    }
+
+    public void TestStringEscaper() {
+        String[][] tests = {
+            {"xyz", "xyz"},
+            {null, "❰WNJ❱xyz❰47❱", "\u200BxyzG"},
+            {"\u200Bxyz\u200B", "❰WNJ❱xyz❰WNJ❱"},
+            {"A\u200B\u00ADB", "A❰WNJ❱❰SHY❱B"},
+        };
+        for (String[] test : tests) {
+            String source = test[0];
+            String expected = test[1];
+            String expectedRoundtrip = test.length < 3 ? test[0] : test[2];
+            if (source != null) {
+                String actual = CodePointEscaper.toEscaped(source);
+                assertEquals(source, expected, actual);
+            }
+            String actualRoundtrip = CodePointEscaper.toUnescaped(expected);
+            assertEquals(expected, expectedRoundtrip, actualRoundtrip);
         }
     }
 }

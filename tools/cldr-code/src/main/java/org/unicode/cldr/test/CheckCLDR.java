@@ -809,7 +809,9 @@ public abstract class CheckCLDR implements CheckAccessor {
             missingNonAltPath,
             badSamplePersonName,
             missingLanguage,
-            namePlaceholderProblem;
+            namePlaceholderProblem,
+            missingSpaceBetweenNameFields,
+            illegalParameterValue;
 
             @Override
             public String toString() {
@@ -1433,6 +1435,7 @@ public abstract class CheckCLDR implements CheckAccessor {
         }
     }
 
+    @Override
     public Phase getPhase() {
         return phase;
     }

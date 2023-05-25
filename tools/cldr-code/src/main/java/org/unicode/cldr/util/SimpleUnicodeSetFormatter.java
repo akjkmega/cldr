@@ -21,7 +21,7 @@ import java.util.function.Function;
  *
  * <ul>
  *   <li>➖ a range, but if between two code points
- *   <li>⦕ start of hex or named escape, but only if followed by [A-Fa-f0-9]+ ⦖
+ *   <li>❰ start of hex or named escape, but only if followed by [A-Fa-f0-9]+ ❱
  * </ul>
  *
  * <b>EBNF</b><br>
@@ -29,11 +29,11 @@ import java.util.function.Function;
  * item = string | range | codePoint<br>
  * string = codePoint+<br>
  * range = codePoint "➖" codePoint<br>
- * codepoint = literal // excludes " ", "⦕", "⦖"<br>
- * codepoint = "⦕" (namedEscape | hex) "⦖"<br>
+ * codepoint = literal // excludes " ", "❰", "❱"<br>
+ * codepoint = "❰" (namedEscape | hex) "❱"<br>
  * namedEscape = [A-Fa-f0-9]+ // as per CodePointEscape<br>
  * hex = [A-Fa-f0-9]{2,6} // must be valid code point 0x0..0x10FFFF<br>
- * ⦕ was chosen to be avoid special use of \\u or \x<br>
+ * ❰ was chosen to be avoid special use of \\u or \x<br>
  *
  * @author markdavis
  */
@@ -173,9 +173,7 @@ public class SimpleUnicodeSetFormatter implements FormatterParser<UnicodeSet> {
         if (!forceHex.contains(cp)) {
             ap.appendCodePoint(cp);
         } else {
-            ap.append(CodePointEscaper.ESCAPE_START)
-                    .append(CodePointEscaper.toAbbreviationOrHex(cp))
-                    .append(CodePointEscaper.ESCAPE_END);
+            ap.append(CodePointEscaper.codePointToEscaped(cp));
         }
         return ap;
     }
@@ -266,7 +264,7 @@ public class SimpleUnicodeSetFormatter implements FormatterParser<UnicodeSet> {
                         "Missing end escape " + CodePointEscaper.ESCAPE_END + ": " + word + "❌");
             }
             result.appendCodePoint(
-                    CodePointEscaper.fromAbbreviationOrHex(
+                    CodePointEscaper.rawEscapedToCodePoint(
                             word.substring(interiorStart, escapeEnd)));
             i = escapeEnd + 1;
         }

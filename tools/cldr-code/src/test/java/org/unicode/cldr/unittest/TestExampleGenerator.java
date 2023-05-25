@@ -201,7 +201,9 @@ public class TestExampleGenerator extends TestFmwk {
                     "//ldml/personNames/initialPattern[@type=\"([^\"]*+)\"]", // TODO CLDR-15384
                     "//ldml/personNames/personName[@order=\"([^\"]*+)\"][@length=\"([^\"]*+)\"][@usage=\"([^\"]*+)\"][@formality=\"([^\"]*+)\"]/namePattern[@alt=\"([^\"]*+)\"]", // TODO CLDR-15384
                     "//ldml/personNames/sampleName[@item=\"([^\"]*+)\"]/nameField[@type=\"([^\"]*+)\"][@alt=\"([^\"]*+)\"]", // TODO CLDR-15384
-                    "//ldml/personNames/sampleName[@item=\"([^\"]*+)\"]/nameField[@type=\"([^\"]*+)\"]" // TODO CLDR-15384
+                    "//ldml/personNames/sampleName[@item=\"([^\"]*+)\"]/nameField[@type=\"([^\"]*+)\"]", // TODO CLDR-15384
+                    "//ldml/personNames/parameterDefault[@parameter=\"([^\"]*+)\"]" // TODO
+                    // CLDR-15384
                     );
     // Add to above if the example SHOULD appear, but we don't have it yet. TODO Add later
 
@@ -1486,15 +1488,15 @@ public class TestExampleGenerator extends TestFmwk {
                 "de",
                 "//ldml/characters/parseLenients[@scope=\"date\"][@level=\"lenient\"]/parseLenient[@sample=\"-\"]",
                 "[\\u200B \\- . ๎ ็]",
-                "〖‎➕ ⦕ZWSP⦖ ๎ ็〗〖‎➖ /〗〖❬internal: ❭[\\-.็๎​]〗"
+                "〖‎➕ ❰WNJ❱ ๎ ็〗〖‎➖ /〗〖❰WNJ❱ allow line wrap after, aka ZWSP〗〖❬internal: ❭[\\-.็๎​]〗"
             },
             {
                 "de",
                 "//ldml/characters/exemplarCharacters",
                 "[\\u200B a-z ๎ ็]",
-                "〖‎➕ ⦕ZWSP⦖ ๎ ็〗〖‎➖ ä ö ß ü〗〖❬internal: ❭[a-z็๎​]〗"
+                "〖‎➕ ❰WNJ❱ ๎ ็〗〖‎➖ ä ö ß ü〗〖❰WNJ❱ allow line wrap after, aka ZWSP〗〖❬internal: ❭[a-z็๎​]〗"
             },
-            {"de", "//ldml/characters/exemplarCharacters", "a-z ⦕ZWSP⦖", null},
+            {"de", "//ldml/characters/exemplarCharacters", "a-z ❰ZWSP❱", null},
         };
 
         for (String[] test : tests) {

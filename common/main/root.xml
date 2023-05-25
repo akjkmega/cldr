@@ -8,7 +8,6 @@ CLDR data files are interpreted according to the LDML specification (http://unic
 the U.S. and other countries. CLDR data files are interpreted according to
 the LDML specification (http://unicode.org/reports/tr35/) Proper interpretation
 of these files requires synthesis of missing items, as per ​https://www.unicode.org/reports/tr35/tr35-general.html#Annotations
-
 for derived annotations.
 Warnings: All cp values have U+FE0F characters removed. See /annotationsDerived/ for derived annotations.
 -->
@@ -5438,6 +5437,10 @@ Warnings: All cp values have U+FE0F characters removed. See /annotationsDerived/
 				<displayName>kn</displayName>
 				<unitPattern count="other">{0} kn</unitPattern>
 			</unit>
+			<unit type="speed-beaufort">
+				<displayName>Bft</displayName>
+				<unitPattern count="other">B {0}</unitPattern>
+			</unit>
 			<unit type="temperature-generic">
 				<displayName>°</displayName>
 				<unitPattern count="other">{0}°</unitPattern>
@@ -5838,6 +5841,8 @@ Warnings: All cp values have U+FE0F characters removed. See /annotationsDerived/
 	<personNames>
 		<nameOrderLocales order="givenFirst">und</nameOrderLocales>
 		<nameOrderLocales order="surnameFirst">ja ko vi yue zh</nameOrderLocales>
+		<parameterDefault parameter="length">medium</parameterDefault>
+		<parameterDefault parameter="formality">formal</parameterDefault>		
 		<nativeSpaceReplacement xml:space="preserve"> </nativeSpaceReplacement>
 		<foreignSpaceReplacement xml:space="preserve"> </foreignSpaceReplacement>
 		<initialPattern type="initial">{0}.</initialPattern>
